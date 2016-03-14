@@ -1,91 +1,77 @@
-#include <stdlib.h>
 #include <stdio.h>
+#include <sys/types.h>
 #include <unistd.h>
+#include <stdlib.h>
+#include <string.h>
+#include <ctype.h>
 
-/* Write COUNT copies of MESSAGE to STREAM, pausing for a second
-   between each.  */
+#define MSGLEN  64
 
-void writer (const char* message, int count, FILE* stream)
-{
-    for (; count > 0; --count) {
-       /* Write the message to the stream, and send it off immediately.   */
-       fprintf (stream, "%s\n", message);
-       fflush (stream);
-       /* Snooze a while.  */
-       sleep (1);
-    }
-}
-
-/* Read random strings from the stream as long as possible.  */
-
-void reader (FILE* stream)
-{
-    char buffer[1024];
-    /* Read until we hit the end of the stream. fgets reads until
-       either a newline or the end-of-file.  */
-    while (!feof (stream)
-           && !ferror (stream)
-           && fgets (buffer, sizeof (buffer), stream) != NULL)
-       fputs (buffer, stdout);
-}
-
-int main ()
-{
-    int fds[2];
+int main(){
+    int     fd[2];
     pid_t pid;
+    int     result;
 
-    char *names[] = {"Hello 5", "Goodbye 6", "No 8", "Goodbye 8"};
-    int num = 4;
+    //Creating a pipe
+    result = pipe (fd);
+    if (result < 0) {
+        //failure in creating a pipe
+        perror("pipe");
+        exit (1);
+    }
 
-    /* Create a pipe. File descriptors for the two ends of the pipe are
-       placed in fds.  */
-    pipe (fds);
-    /* Fork a child process.  */
-    pid = fork ();
-    if (pid == (pid_t) 0) {
-      FILE* stream;
-      /* This is the child process. Close our copy of the write end of
-         the file descriptor.  */
-      close (fds[1]);
-      /* Convert the read file descriptor to a FILE object, and read
-         from it.   */
-      stream = fdopen (fds[0], "r");
-      reader (stream);
-        close (fds[0]);
-      }
-      else {
-        /* This is the parent process.  */
-        FILE* stream;
-        /* Close our copy of the read end of the file descriptor.  */
-        close (fds[0]);
-        /* Convert the write file descriptor to a FILE object, and write
-           to it.  */
-        stream = fdopen (fds[1], "w");
+    //Creating a child process
+    pid = fork();
+    if (pid < 0) {
+         //failure in creating a child
+         perror ("fork");
+         exit(2);
+    }
 
-        int n;
-   char line[80];
-   clrscr();
+    if (pid == 0) {
+        //Child process
+         char message[MSGLEN];
 
-   fr = fopen ("/Users/Dylan/Desktop/out.txt", "rt");  /* open the file for reading */
-   /* elapsed.dta is the name of the file */
-   /* "rt" means open the file for reading text */
+          for(int i = 0; i < 1; i++) {
+                    //Clearing the message
+                    memset (message, 0, sizeof(message));
+                    printf ("Enter a message: ");
+                    //scanf ("%s",message);
 
-   while(fgets(line, 80, fr) != NULL)
-   {
-	 /* get a line, up to 80 chars from fr.  done if NULL */
-	 sscanf (line, "%ld", &elapsed_seconds);
-	 /* convert the string to a long int */
-	 printf ("%ld\n", elapsed_seconds);
-   }
-   fclose(fr);  /* close the file prior to exiting the routine */
+                    fgets (message, 1024, stdin);
 
-        for (int i = 0; i < num; i++) {
+                    //Writing message to the pipe
+                    write(fd[1], message, strlen(message));
+            }
+            exit (0);
+    }
+    else {
+        //Parent Process
+         char message[MSGLEN];
 
-            writer (names[i], 1, stream);
-        }
+         //while (1) {
+                    //Clearing the message buffer
+                    memset (message, 0, sizeof(message));
 
-        close (fds[1]);
-      }
+                    //Reading message from the pipe
 
-      return 0;
+                    read (fd[0], message, sizeof(message));
+                    printf("Message entered %s\n",message);
+                    /*
+                    Message entered needs to be in the format of number first space then string for it to work
+                    */
+
+                    char *ptr;
+                    long wc;
+
+                    wc = strtol(message, &ptr, 10);
+                    printf("The number(unsigned long integer) is %ld\n", wc);
+                    printf("String part is %s", ptr);
+
+            //}
+
+            exit(0);
+     }
+     return 0;
 }
+
