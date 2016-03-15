@@ -1,5 +1,13 @@
 # depslib dependency file v1.0
-1457996385 source:/Users/Dylan/Documents/CMPSC 311/Project 2/CMPSC311-ProjectTwo/main.c
+1457996466 source:/Users/Dylan/Documents/CMPSC 311/Project 2/CMPSC311-ProjectTwo/main.c
+	<stdio.h>
+	<sys/types.h>
+	<unistd.h>
+	<stdlib.h>
+	<string.h>
+	<ctype.h>
+
+1457996466 source:/Users/Dylan/Documents/CMPSC-311/Project-2/CMPSC311-ProjectTwo/main.c
 	<stdio.h>
 	<sys/types.h>
 	<unistd.h>

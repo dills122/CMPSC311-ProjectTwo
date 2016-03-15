@@ -6,6 +6,7 @@
 #include <ctype.h>
 
 #define MSGLEN  64
+#define MESSES  10
 
 int main(){
     int     fd[2];
@@ -32,7 +33,7 @@ int main(){
         //Child process
          char message[MSGLEN];
 
-          for(int i = 0; i < 1; i++) {
+          for(int i = 0; i < MESSES; i++) {
                     //Clearing the message
                     memset (message, 0, sizeof(message));
                     printf ("Enter a message: ");
@@ -43,13 +44,15 @@ int main(){
                     //Writing message to the pipe
                     write(fd[1], message, strlen(message));
             }
+            close(fd[1]);
             exit (0);
     }
     else {
         //Parent Process
+        wait(NULL);
          char message[MSGLEN];
 
-         //while (1) {
+         while (1) {
                     //Clearing the message buffer
                     memset (message, 0, sizeof(message));
 
@@ -68,7 +71,10 @@ int main(){
                     printf("The number(unsigned long integer) is %ld\n", wc);
                     printf("String part is %s", ptr);
 
-            //}
+                    wc = 0;
+                    ptr = "";
+
+            }
 
             exit(0);
      }
