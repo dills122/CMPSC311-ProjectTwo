@@ -9,7 +9,7 @@
 #define MESSES  3
 #define ARR 12
 
-int main(){
+int main(int argc, char *argv[]){
     int     fd[2];
     pid_t   pid;
     int     result;
@@ -67,6 +67,8 @@ int main(){
          for (int i = 0; i < MESSES; i++) {
 
             if (proceID == i) {
+
+                //where all of the children to the mini word counts
 
                 printf("The process ID: %d\n", proceID);
                 printf("The start is %d and end is %d\n", start, end);
